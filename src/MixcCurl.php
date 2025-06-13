@@ -8,6 +8,7 @@ use Psr\Log\NullLogger;
 class MixcCurl
 {
     protected $logger;
+    protected $remarks;
     protected $clientId;
 
     public function __construct()
@@ -26,12 +27,7 @@ class MixcCurl
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $res = curl_exec($ch);
         curl_close($ch);
-        $this->logger->info($this->buildCurlGetStr($url), [
-            'clientId' => $this->clientId,
-            'responseBody' => $res,
-            'responseTime' => (int)(microtime(1) * 1000) - $requestStartTime,
-            'responseThrow' => '',
-        ]);
+        $this->logger->info($this->remarks,['request'=>$url,'response'=>$res]);
         return $res;
     }
 
@@ -59,34 +55,16 @@ class MixcCurl
         curl_setopt($curl,CURLOPT_HTTPHEADER,$headerArray);
         curl_setopt($curl,CURLOPT_TIMEOUT,$timeout);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($curl);
+        $response = curl_exec($curl);
         curl_close($curl);
-        $this->logger->info($this->buildCurlPostStr($url, $header, $aParam), [
-            'clientId' => $this->clientId,
-            'responseBody' => $output,
-            'responseTime' => (int)(microtime(1) * 1000) - $requestStartTime,
-            'responseThrow' => '',
-        ]);
-        return $output;
+        $this->logger->info($this->remarks, ['request'=>['header'=>$header,'token'=>$accesstoken],'response'=>$response]);
+        return $response;
     }
 
-    private function buildCurlPostStr($url, $headers, $requestBody) {
-        $curlStr = "curl --location --request POST '".$url."'";
-        foreach ($headers as $hKey => $hVal) {
-            $curlStr .= " --header '{$hKey}: {$hVal}'";
-        }
-        $curlStr .= " --data-raw '".json_encode($requestBody)."'";
-
-        return $curlStr;
-    }
-
-    private function buildCurlGetStr($url) {
-        return "curl --location --request GET '".$url."'";
-    }
-
-    public function setLogger(LoggerInterface  $logger):MixcCurl
+    public function setLogger(LoggerInterface  $logger,string $remarks = ''):MixcCurl
     {
         $this->logger = $logger;
+        $this->remarks = $remarks;
         return $this;
     }
     public function setClientId(string $clientId):MixcCurl

@@ -2,6 +2,7 @@
 
 namespace Mixc;
 
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class MixcGateway
@@ -10,6 +11,7 @@ class MixcGateway
     private $accessToken;
     private $sessionKey;
     private $logger;
+    private $remarks;
     private $mixcCurl;
 
     private $userInfoUrl = '/api/open/members/currently_logged';
@@ -70,7 +72,7 @@ class MixcGateway
      * }
      * }
      */
-   public function queryUserPointsBalance(){
+    public function queryUserPointsBalance(){
         $query = $this->userPointsBalanceUrl."?mallCode=".$this->mallCode."&source=h5";
         $url = MixcConst::getGatewayBaseUrl().$query;
         $header = static::getSignHeader(false,$query,$this->sessionKey);
@@ -162,8 +164,8 @@ class MixcGateway
         $header['x-ca-nonce'] = $nonce;
         $method = !$ispost ? 'GET' : 'POST';
         $sign = static::sign($method, $header, $query,$key,$aParam);
-        $headers['x-ca-signature'] = $sign;
-        return $headers;
+        $header['x-ca-signature'] = $sign;;
+        return $header;
     }
 
     private static function sign($httptype,$header,$query,$signkey,$aparam=[])
@@ -198,4 +200,17 @@ class MixcGateway
         }
         return $sign;
     }
+
+    /**
+     * @param LoggerInterface $logger
+     * @return MixcGateway
+     */
+    public function setLogger(LoggerInterface $logger, string $remarks = ''): MixcGateway {
+        $this->logger = $logger;
+        $this->remarks = $remarks;
+        $this->mixcCurl->setLogger($logger,$remarks);
+
+        return $this;
+    }
+
 }

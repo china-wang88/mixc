@@ -11,6 +11,7 @@ abstract class MixcAuth
     protected $clientSecret;
     protected $mixcCurl;
     protected $logger;
+    protected $remarks;
     public function __construct($clientId,$clientSecret)
     {
         $this->clientId = $clientId;
@@ -26,10 +27,11 @@ abstract class MixcAuth
         return $this->mixcCurl->getDataCurl($token_url);
     }
 
-    public function setLogger(LoggerInterface $logger):MixcAuth
+    public function setLogger(LoggerInterface $logger,string $remarks = ''):MixcAuth
     {
+        $this->remarks = $remarks;
         $this->logger = $logger;
-        $this->mixcCurl->setLogger($logger);
+        $this->mixcCurl->setLogger($logger,$remarks);
         return $this;
     }
 }
