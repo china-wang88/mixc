@@ -1,0 +1,27 @@
+{
+    "name": "china-wang88/mixc",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mixc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "china-wang88",
+            "email": "w2089704505@163.com"
+        }
+    ],
+    "require": {
+        "psr/log": "^1.0.1 || ^2.0 || ^3.0",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
+        }
+    }
+}
