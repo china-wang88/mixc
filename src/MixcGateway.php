@@ -21,6 +21,7 @@ class MixcGateway
     private $rollbackPointsUrl = '/api/open/points/cancel';
     private $receivePointsUrl = '/api/open/coupons/self/receive';
 
+    private $oauthLogoutUrl = '/auth/oauth/logout';
 
     public function __construct($clientId,$accessToken,$sessionKey)
     {
@@ -52,6 +53,15 @@ class MixcGateway
     {
         $query = $this->userGroupUrl."?mallCode=".$this->mallCode;
         $url =  MixcConst::getGatewayBaseUrl().$query;
+        $header = static::getSignHeader(false,$query,$this->sessionKey);
+        return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
+    }
+
+
+    public function oauthLogout()
+    {
+        $query = $this->oauthLogoutUrl."?Bearer $this->accessToken";
+        $url =  MixcConst::getAuthBaseUrl().$query;
         $header = static::getSignHeader(false,$query,$this->sessionKey);
         return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
     }
