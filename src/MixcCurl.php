@@ -9,7 +9,6 @@ class MixcCurl
 {
     protected $logger;
     protected $remarks;
-    protected $clientId;
 
     public function __construct()
     {
@@ -65,11 +64,6 @@ class MixcCurl
     {
         $this->logger = $logger;
         $this->remarks = $remarks;
-        return $this;
-    }
-    public function setClientId(string $clientId):MixcCurl
-    {
-        $this->clientId = $clientId;
         return $this;
     }
 }

@@ -18,7 +18,6 @@ abstract class MixcAuth
         $this->clientSecret = $clientSecret;
         $this->logger = new NullLogger();
         $this->mixcCurl = new MixcCurl();
-        $this->mixcCurl->setClientId($clientId);
     }
 
     public function refreshToken($refreshToken)

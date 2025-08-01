@@ -13,6 +13,8 @@ class MixcGateway
     private $logger;
     private $remarks;
     private $mixcCurl;
+    private $clientId;
+    private $clientSecret;
 
     private $userInfoUrl = '/api/open/members/currently_logged';
     private $userGroupUrl = '/api/open/members/currently_logged/groups';
@@ -20,16 +22,27 @@ class MixcGateway
     private $deductUserPointsUrl = '/api/open/points/deduct';
     private $rollbackPointsUrl = '/api/open/points/cancel';
     private $receivePointsUrl = '/api/open/coupons/self/receive';
+    private $mixcTokenUrl = '/auth/oauth/token';
 
-    private $oauthLogoutUrl = '/auth/oauth/logout';
 
-    public function __construct($clientId,$accessToken,$sessionKey)
+    public function __construct($accessToken,$sessionKey)
     {
         $this->accessToken = $accessToken;
         $this->sessionKey = $sessionKey;
         $this->logger = new NullLogger();
         $this->mixcCurl = new MixcCurl();
-        $this->mixcCurl->setClientId($clientId);
+    }
+
+    public function setClientId($clientId)
+    {
+        $this->clientId = $clientId;
+        return $this;
+    }
+
+    public function setClientSecret($clientSecret)
+    {
+        $this->clientSecret = $clientSecret;
+        return $this;
     }
 
     public function mallCode($mallCode)
@@ -46,6 +59,19 @@ class MixcGateway
         return $this->mixcCurl->postDataCurl( MixcConst::getGatewayBaseUrl().$this->userInfoUrl, $header, $this->accessToken);
     }
 
+    public function getTokenByMixc($sToken)
+    {
+        $query = $this->mixcTokenUrl."?grant_type=mixc_token";
+        $url =  MixcConst::getAuthBaseUrl().$query;
+        $header = static::getSignHeader(false,$query,$this->sessionKey);
+        $aPostData = [
+            'mixc_access_token' => $sToken,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+        ];
+        return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken, $aPostData );
+    }
+
     /**
      * 查询当前登录用户的专属层级信息
      */
@@ -56,16 +82,6 @@ class MixcGateway
         $header = static::getSignHeader(false,$query,$this->sessionKey);
         return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
     }
-
-
-    public function oauthLogout()
-    {
-        $query = $this->oauthLogoutUrl."?Bearer $this->accessToken";
-        $url =  MixcConst::getAuthBaseUrl().$query;
-        $header = static::getSignHeader(false,$query,$this->sessionKey);
-        return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
-    }
-
 
     /**
      * @return array
