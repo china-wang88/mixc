@@ -119,7 +119,7 @@ class MixcGateway
      * "data": {}
      * }
      */
-    public function deductUserPoints($tradeId, $value, $remarks = '')
+    public function deductUserPoints($tradeId, $value)
     {
         $url = MixcConst::getGatewayBaseUrl().$this->deductUserPointsUrl;
 
@@ -127,8 +127,7 @@ class MixcGateway
             'mallCode' => $this->mallCode,
             'bizId' => $tradeId,
             'bizType' => 'o706',
-            'value' => $value,
-            'remarks' => $remarks,
+            'value' => $value
         );
 
         $header = static::getSignHeader(true,$this->deductUserPointsUrl,$this->sessionKey,$aParam);
@@ -148,7 +147,7 @@ class MixcGateway
      * "data": {} 返回数据(如有值，则返回重复取消积分已存在的交易流水ID)
      * }
      */
-    function rollbackUserPoints($tradeId,$value,$remarks)
+    function rollbackUserPoints($tradeId,$value)
     {
         $url = MixcConst::getGatewayBaseUrl().$this->rollbackPointsUrl;
 
@@ -156,8 +155,7 @@ class MixcGateway
             'mallCode' => $this->mallCode,
             'bizId' => $tradeId,
             'bizType' => 'i706',
-            'value' => $value,
-            'remarks' => $remarks,
+            'value' => $value
         );
         $header = static::getSignHeader(true,$this->rollbackPointsUrl,$this->sessionKey,$aParam);
         return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken,$aParam );
