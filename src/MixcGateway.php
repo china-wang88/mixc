@@ -61,15 +61,9 @@ class MixcGateway
 
     public function getTokenByMixc($sToken)
     {
-        $query = $this->mixcTokenUrl."?grant_type=mixc_token";
+        $query = $this->mixcTokenUrl."?grant_type=mixc_token&mixc_access_token={$sToken}&client_id=".$this->clientId."&client_secret=".$this->clientSecret;
         $url =  MixcConst::getAuthBaseUrl().$query;
-        $header = static::getSignHeader(false,$query,$this->sessionKey);
-        $aPostData = [
-            'mixc_access_token' => $sToken,
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
-        ];
-        return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken, $aPostData );
+        return httpGet( $url);
     }
 
     /**
