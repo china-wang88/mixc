@@ -16,6 +16,8 @@ class MixcGateway
     private $clientId;
     private $clientSecret;
 
+    private $mallsUrl = '/api/open/malls';
+    private $deleteTokenUrl = '/auth/oauth/logout';
     private $userInfoUrl = '/api/open/members/currently_logged';
     private $userGroupUrl = '/api/open/members/currently_logged/groups';
     private $userPointsBalanceUrl = '/api/open/points/balance';
@@ -25,7 +27,7 @@ class MixcGateway
     private $mixcTokenUrl = '/auth/oauth/token';
 
 
-    public function __construct($accessToken,$sessionKey)
+    public function __construct($accessToken = '',$sessionKey = '')
     {
         $this->accessToken = $accessToken;
         $this->sessionKey = $sessionKey;
@@ -50,6 +52,26 @@ class MixcGateway
         $this->mallCode = $mallCode;
         return $this;
     }
+
+    /**
+     * Notes:删除令牌
+     */
+    public function deleteToken(){
+        $header = static::getSignHeader(false,$this->deleteTokenUrl,$this->sessionKey);
+        return $this->mixcCurl->postDataCurl( MixcConst::getAuthBaseUrl().$this->deleteTokenUrl, $header, $this->accessToken);
+    }
+
+    /**
+     * Notes:查询该商场的业态和楼层
+     */
+    public function getMalls()
+    {
+        $query = $this->mallsUrl."/".$this->mallCode;
+        $url =  MixcConst::getGatewayBaseUrl().$query;
+        $header = static::getSignHeader(false,$query,'mixc');
+        return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
+    }
+
 
     /**
      * 查询当前登录的用户信息
