@@ -60,6 +60,25 @@ class MixcCurl
         return $response;
     }
 
+    public function curlPost3( $url,$postdata ){
+        $timeout = 30;
+
+        //file_put_contents( "mixc.txt",json_encode($headerArray)."\n",FILE_APPEND);
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST,FALSE);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($postdata));
+        //file_put_contents( "mixc.txt",json_encode($postdata)."\n",FILE_APPEND);
+        curl_setopt($curl,CURLOPT_TIMEOUT,$timeout);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
+    }
+
     public function setLogger(LoggerInterface  $logger,string $remarks = ''):MixcCurl
     {
         $this->logger = $logger;

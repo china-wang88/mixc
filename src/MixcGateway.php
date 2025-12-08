@@ -25,6 +25,7 @@ class MixcGateway
     private $rollbackPointsUrl = '/api/open/points/cancel';
     private $receivePointsUrl = '/api/open/coupons/self/receive';
     private $mixcTokenUrl = '/auth/oauth/token';
+    private $memberInfoUrl = '/api/open/members/user_code';
 
 
     public function __construct($accessToken = '',$sessionKey = '')
@@ -72,6 +73,30 @@ class MixcGateway
         return $this->mixcCurl->postDataCurl( $url, $header, $this->accessToken );
     }
 
+    /**
+     * Notes:获取客户端token（统一）
+     */
+    public function getAccessTokenByClientCredentials()
+    {
+        $url = MixcConst::getAuthBaseUrl()."/auth/oauth/token?grant_type=client_credentials&scope=read_mobile";
+        return $this->mixcCurl->curlPost3( $url,['client_id'=>$this->clientId,'client_secret'=>$this->clientSecret]);
+    }
+
+    /**
+     * Notes:通过会员码获取会员信息
+     */
+    public function getMemberInfo($user_code,$accessToken,$sessionKey)
+    {
+
+        $encodedString = urlencode(mb_convert_encoding($user_code, 'UTF-8'));
+
+        $query = $this->memberInfoUrl."?userCode=$encodedString";
+
+        $url =  MixcConst::getGatewayBaseUrl().$this->memberInfoUrl."?userCode=".urlencode($encodedString);
+
+        $header = static::getSignHeader(false,$query,$sessionKey);
+        return $this->mixcCurl->postDataCurl( $url, $header, $accessToken );
+    }
 
     /**
      * 查询当前登录的用户信息
