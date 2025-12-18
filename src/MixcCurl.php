@@ -25,6 +25,11 @@ class MixcCurl
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         $res = curl_exec($ch);
+        if (curl_errno($ch)){
+            $error_code = curl_errno($ch);
+            $error_message = curl_error($ch);
+            throw new \Exception($error_message,$error_code);
+        }
         curl_close($ch);
         $this->logger->info($this->remarks,['request'=>$url,'response'=>$res]);
         return $res;
@@ -55,6 +60,11 @@ class MixcCurl
         curl_setopt($curl,CURLOPT_TIMEOUT,$timeout);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $response = curl_exec($curl);
+        if (curl_errno($curl)){
+            $error_code = curl_errno($curl);
+            $error_message = curl_error($curl);
+            throw new \Exception($error_message,$error_code);
+        }
         curl_close($curl);
         $this->logger->info($this->remarks, ['request'=>['header'=>$header,'token'=>$accesstoken],'response'=>$response]);
         return $response;
@@ -75,6 +85,11 @@ class MixcCurl
         curl_setopt($curl,CURLOPT_TIMEOUT,$timeout);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
+        if (curl_errno($curl)){
+            $error_code = curl_errno($curl);
+            $error_message = curl_error($curl);
+            throw new \Exception($error_message,$error_code);
+        }
         curl_close($curl);
         return $output;
     }
